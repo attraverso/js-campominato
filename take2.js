@@ -9,54 +9,73 @@ con difficoltà 1 => si gioca con numeri che vanno da 1 a 80
 con difficoltà 2=> si gioca con numeri che vanno da 1 a 50
 */
 
-/*ask for difficulty level*/
-var getDifficulty = prompt('Choose your level: 0 - easy, 1 - normal, 2 - difficult');
+/*ask for difficulty level and keep asking if the input isn't valid*/
+do {
+  var getDifficulty = prompt('Choose your level: 0 - easy, 1 - normal, 2 - difficult');
 
+  /*validity check on getDifficulty*/
+  var checkDifficulty = isValidNumber(getDifficulty, 0, 3);
+  // console.log('checkDifficulty is valid? ' + checkDifficulty);
+
+  if (!checkDifficulty) {
+    alert('Hai inserito un valore non corretto');
+  }
+
+} while (!checkDifficulty);
+
+
+/*establish difficulty levels*/
 if (getDifficulty == 0) {
-  level = 100 +1;
+  level = 100;
 } else if (getDifficulty == 1) {
-  level = 80 +1;
-} else if (getDifficulty == 3) {
-  level = 20 +1;
+  level = 80;
+} /*test level*/ else if (getDifficulty == 3) {
+  level = 20;
 } else {
-  level = 50 +1;
+  level = 50;
 }
 
-/*container array for random "losing" numbers*/
-var mines = [];
-
-/*populate with random "losing" numbers*/
-mines.push(getUniqueRandomNumbers(16, level));
+/*create array with random "losing" numbers*/
+var mines = (getUniqueRandomNumbers(16, level));
 
 /*container array for max tries count*/
 var maxTriesCheck = [];
 
 /*copy losing numbers into total number count*/
 var maxTriesCheck = mines.slice();
-// console.log(mines);
-// console.log(maxTriesCheck);
+console.log(mines);
+console.log(maxTriesCheck);
 
 /*set a counter variable for scorekeeping*/
 var scoreKeeper = 1;
 
 do {
-  /*ask for a number between 1 and what's required by the level of difficulty*/
-  getUserNumber = parseInt(prompt('Pick a number between 1 and ' + level));
+  /*ask for a number between 1 and what's required by the level of difficulty - if input isn't valid, pop alert and keep asking*/
+  var getUserNumber = parseInt(prompt('Pick a number between 1 and ' + level));
+
+  /*validity check on getUserNumber*/
+  var checkUserNumber = isValidNumber(getUserNumber, 1, level);
+  console.log('checkusernumber is valid? ' + checkUserNumber);
+
+  if (!checkUserNumber) {
+    alert('Hai inserito un valore non corretto');
+  }
 
   /*if the number matches a mine: you lose, otherwise, push the number into total number count array*/
   if (mines.includes(getUserNumber)) {
     console.log('Your score is: ' + scoreKeeper);
-  } else if (!maxTriesCheck.includes(getUserNumber)) {
+  } else if (!maxTriesCheck.includes(getUserNumber) && checkUserNumber) {
     maxTriesCheck.push(getUserNumber);
+    /*update score*/
+    scoreKeeper++;
+    console.log(maxTriesCheck);
   }
-  /*update score*/
-  scoreKeeper++;
-  // console.log(maxTriesCheck);
+
 } /*keep running until total number conut reaches what's required by level of difficulty*/
-  while (!mines.includes(getUserNumber) && maxTriesCheck.length < level);
+  while (!mines.includes(getUserNumber) && (maxTriesCheck.length) < level);
 
 /*if you manage to survive the do-while cycle then congrats, you're a winner!*/
-if (maxTriesCheck.length >= level) {
+if ((maxTriesCheck.length) >= level) {
   console.log('You win');
 }
 
@@ -66,12 +85,21 @@ function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 
-function getUniqueRandomNumbers(howMany, max) {
-  while (mines.length < howMany) {
-    var randomMineNumber = getRandomNumber(1, max);
-    if (!mines.includes(randomMineNumber)) {
-    mines.push(randomMineNumber);
+function getUniqueRandomNumbers(howMany, maxNumber) {
+  var randomNumbersArray = [];
+  while (randomNumbersArray.length < howMany) {
+    var randomMineNumber = getRandomNumber(1, maxNumber);
+    if (!randomNumbersArray.includes(randomMineNumber)) {
+    randomNumbersArray.push(randomMineNumber);
     }
   }
-  return mines;
+  return randomNumbersArray;
+}
+
+function isValidNumber(value, min, max) {
+  if (isNaN(value) || value < min || value > max ) {
+    return false;
+  } else {
+    return true;
+  }
 }
